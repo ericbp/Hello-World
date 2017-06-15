@@ -159,7 +159,22 @@ CREATE OR REPLACE FUNCTION saveDaysBetweenStages( _start_stage_uid text, _end_st
   END;
   $$
   LANGUAGE 'plpgsql';
+  
+CREATE OR REPLACE FUNCTION public.getupdatedeventsfrom(lastexecution timestamp without time zone)
+  RETURNS SETOF integer AS
+$BODY$
 
+BEGIN 
+
+RETURN QUERY SELECT DISTINCT programinstanceid from programinstance where programinstanceid in 
+(SELECT programinstanceid from programstageinstance  where programstageinstanceid IN 
+(select programstageinstanceid from trackedentitydatavalue 
+where lastupdated > Lastexecution));
+
+END;
+
+$BODY$
+  LANGUAGE plpgsql
 
 -- "Mental Health: Diagnosis": "TK_MH5"
 -- "Mental Health: Number of follow ups": "TK_MH52"
